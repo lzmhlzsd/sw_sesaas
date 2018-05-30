@@ -1,0 +1,41 @@
+<style lang="less">
+.grid-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    // width: 190rpx;
+    height: 170rpx;
+    .iconfont {
+        font-size: 48rpx;
+    }
+    .name {
+        font-size: 24rpx;
+        margin-top: 10rpx;
+    }
+}
+</style>
+
+<template>
+        <navigator class="grid-item" url="{{gitem[index].path}}">
+            <i class="iconfont {{gitem[index].icon}}" style="color: {{gitem[index].color}}"></i>
+            <text class="name">{{gitem[index].text}}</text>
+        </navigator>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class GridItem extends wepy.component {
+  props = {
+    gitem: {},
+    index: {}
+  };
+
+  onLoad() {
+    console.log('gridItem onload: %s', this.index)
+  }
+    // custom methods
+}
+</script>

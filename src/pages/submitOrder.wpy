@@ -1,0 +1,28 @@
+<style lang="less">
+
+</style>
+
+<template>
+  <view>
+      提交订单
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class SubmitOrder extends wepy.page {
+  config = {
+    navigationBarTitleText: '提交订单'
+  }
+  components = {}
+
+  data = {}
+  methods = {}
+
+  events = {}
+  onLoad() {}
+
+   // custom methods
+}
+</script>

@@ -1,0 +1,231 @@
+<style lang="less">
+@import './../style/theme';
+::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    color: transparent;
+}
+.swiper-tab-pd {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 999;
+}
+.over-model {
+  position: fixed;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  width: 100%;
+  height: 100%;
+  top: 0;
+}
+.panle-model {
+  position: fixed;
+  height: 0rpx;
+  width: 100%;
+  z-index: 9999;
+  background: #fff;
+  bottom: 0;
+  .header {
+      position: relative;
+      padding: 20rpx;
+      text-align: center;
+      border-bottom: 1px solid @color-l7;
+      text {
+          position: absolute;
+          right: 20rpx;
+          font-size: 28rpx;
+          color: @color-l1;
+      }
+  }
+  .container {
+      .coupon-code {
+          padding: 10rpx 20rpx;
+          font-size: 48rpx;
+          color: @color-l4;
+          text-align: center;
+      }
+      .coupon-desc {
+          padding: 10rpx 20rpx;
+          font-size: 28rpx;
+          color: @color-l6;
+          text-align: center;
+      }
+  }
+}
+.barcode {
+    display: flex;
+    // height: 0rpx;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.barcode > canvas {
+    width: 580rpx;
+    height: 100rpx;  
+}
+
+.qrcode {
+    height: 360rpx;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.qrcode > canvas {
+    width: 360rpx;
+    height: 360rpx;
+}
+</style>
+
+<template>
+    <view class="swiper-tab-pd">
+        <tab @currentTab.user="getCurrentTab" :tabList.sync="tabList" :currentTab.sync="currentTab"></tab>
+    </view>
+    <scroll-view scroll-y="true" style="height:{{winHeight - 43}}px; margin-top: 43px;" bindscrolltolower="onReachBottom">
+        <coupons :list.sync="list"></coupons>
+        <!-- <orderItem :orderList.sync="list" :currentTab.sync="currentTab" :noMore.sync="no_more"></orderItem> -->
+        <placeHolder :show.sync="is_empty" icon="icon-empty" message="暂无发现数据"></placeHolder>
+    </scroll-view>
+    <view class="over-model {{hidden ? 'hidden' : ''}}"></view>
+    <view class="panle-model " animation="{{animationData}}">
+        <view class="header">会员活动礼品邀约
+            <text @tap.stop="close">关闭</text>
+        </view>
+        <view class="container">
+            <view class="qrcode">
+                <canvas canvas-id="qrcode" />
+            </view>
+            <view class="barcode">
+                <canvas canvas-id="barcode" />
+            </view>
+            <view class="coupon-code">券号：KP8BV69S</view>
+            <view class="coupon-desc">付款时请出示此券</view>
+        </view>
+    </view>
+    <toast class="toast"/>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Tab from './../components/tab'
+import Coupons from './../components/coupon'
+import PlaceHolder from './../components/placeholder'
+import api from './../api/api'
+import Toast from 'wepy-com-toast'
+import _ from 'lodash'
+import {barcode, qrcode} from './../utils/code'
+
+export default class Coupon extends wepy.page {
+  config = {
+    navigationBarTitleText: '优惠券'
+  };
+  components = {
+    tab: Tab,
+    placeHolder: PlaceHolder,
+    coupons: Coupons,
+    toast: Toast
+  };
+
+  data = {
+    tabList: [
+        { name: '未使用', type: 1, dotNum: 5 },
+        { name: '已使用', type: 2, dotNum: 2 },
+        { name: '已过期', type: 3, dotNum: 1 }
+    ],
+    winHeight: 0,
+    currentTab: 1,
+    list: [],
+    is_empty: true,
+    no_more: false,
+    hidden: true,
+    // 动画效果
+    animationData: ''
+  };
+  methods = {
+    close() {
+      this.animation.height(0).step()
+      this.animationData = this.animation.export()
+      setTimeout(() => {
+        this.hidden = true
+        this.$apply()
+      }, 200)
+    }
+  };
+
+  events = {
+    'Event.HandleClick': () => {
+      console.log(`Event.HandleClick: ${this.currentTab}`)
+      this.getCouponList()
+    },
+    'Event.handleShowCouponDetailClick': (e) => {
+      console.log(`Event.handleShowCouponDetailClick: ${e}`)
+      if (e === 1) {
+        this.animation.height('700rpx').step()
+        this.animationData = this.animation.export()
+        this.hidden = false
+      }
+    }
+  };
+  onLoad() {
+    let SystemInfo = wepy.getStorageSync('SystemInfo')
+    this.winHeight = SystemInfo.windowHeight + 48 // 非首页加菜单栏高度
+  }
+  onShow() {
+    this.getCouponList()
+    barcode('barcode', '123456799', 580, 100)
+    qrcode('qrcode',
+    '123456789023786987',
+    360, 360)
+    this.animation = wx.createAnimation({
+      transformOrigin: '50% 50%',
+      duration: 200,
+      timingFunction: 'linear',
+      delay: 0
+    })
+  }
+    // custom methods
+  async getCouponList() {
+    const res = await api.getCouponList({ method: 'POST',
+      query: {
+        status: this.currentTab
+      } })
+    if (res) {
+      if (res.code === 1000) {
+        _.forEach(res.result, function(value, key) {
+          switch (value.status) {
+            case 1:
+              value['status_desc'] = 'no-use'
+              break
+            case 2:
+              value['status_desc'] = 'used'
+              break
+            case 3:
+              value['status_desc'] = 'expire'
+              break
+            default:
+              value['status_desc'] = 'expire'
+              break
+          }
+        })
+        this.list = res.result
+        if (res.result.length === 0) {
+          this.is_empty = true
+        } else {
+          this.is_empty = false
+        }
+        this.$apply()
+      } else {
+        this.$invoke('toast', 'show', {
+          title: res.emsg,
+          img: './../images/alert.png'
+        })
+      }
+    }
+  }
+}
+</script>

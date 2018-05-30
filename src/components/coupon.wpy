@@ -1,0 +1,172 @@
+<style lang="less">
+@import "./../style/theme";
+.block-content {
+    padding: 20rpx;
+}
+.coupon {
+    border: 1px solid @color-l1;
+    padding: 20rpx;
+    background: #fff;
+    margin-bottom: 20rpx;
+    .coupon-up {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20rpx;
+        border-bottom: 1px dashed @color-l1;
+        color: @color-l1;
+        .iconfont {
+            font-size: 56rpx;
+        }
+        .coupon-title {
+            font-size: 44rpx;
+        }
+        .coupon-sub {
+            font-size: 26rpx;
+        }
+        .coupon-desc {
+            font-size: 28rpx;
+        }
+    }
+    .coupon-up::before {
+        content: '';
+        width: 30rpx;
+        height: 30rpx;
+        position: absolute;
+        z-index: 9;
+        border-width: 1px;
+        border-style: solid;
+        border-color: @color-l1 @color-l1 transparent transparent;
+        border-radius: 50%;
+        background-color: #f5f5f5;
+        top: 100rpx;
+        left: -37rpx;
+        -webkit-transform: rotate(43deg);
+        transform: rotate(43deg);
+    }
+    .coupon-up::after {
+        content: '';
+        width: 30rpx;
+        height: 30rpx;
+        position: absolute;
+        z-index: 9;
+        border-width: 1px;
+        border-style: solid;
+        border-color: transparent transparent @color-l1 @color-l1 ;
+        border-radius: 50%;
+        background-color: #f5f5f5;
+        top: 100rpx;
+        right: -37rpx;
+        -webkit-transform: rotate(43deg);
+        transform: rotate(43deg);
+    }
+    .coupon-down {
+        padding: 20rpx 20rpx 0;
+        .title {
+            font-size: 24rpx;
+            color: @color-l4;
+        }
+        .coupon-desc {
+            font-size: 24rpx;
+            color: @color-l6;
+        }
+    }
+}
+
+.coupon.no-use {
+    border: 1px solid @color-l1;
+    .coupon-up{
+        border-bottom: 1px dashed @color-l1;
+        color: @color-l1;
+    }
+    .coupon-up::before {
+         border-color: @color-l1 @color-l1 transparent transparent;
+    }
+    .coupon-up::after {
+        border-color: transparent transparent @color-l1 @color-l1 ;
+    }
+}
+.coupon.used {
+    border: 1px solid @color-l2;
+    .coupon-up{
+        border-bottom: 1px dashed @color-l2;
+        color: @color-l2;
+    }
+    .coupon-up::before {
+         border-color: @color-l2 @color-l2 transparent transparent;
+    }
+    .coupon-up::after {
+        border-color: transparent transparent @color-l2 @color-l2 ;
+    }
+}
+.coupon.expire {
+    border: 1px solid @color-l6;
+    .coupon-up{
+        border-bottom: 1px dashed @color-l6;
+        color: @color-l6;
+    }
+    .coupon-up::before {
+         border-color: @color-l6 @color-l6 transparent transparent;
+    }
+    .coupon-up::after {
+        border-color: transparent transparent @color-l6 @color-l6 ;
+    }
+}
+</style>
+
+<template>
+    <view class="block-content">
+    <repeat for="{{list}}" key="m" index="n" item="item">
+        <view class="coupon {{item.status_desc}}" @tap="handleShow({{item.status}})">
+            <view class="coupon-up">
+                <view class="view-flex">
+                    <i class="iconfont icon-quan"></i>
+                    <view class="coupon-title">
+                    {{item.title}}
+                    </view>
+                </view>
+                <view>
+                    <view class="coupon-sub">{{item.sub_title}}</view>
+                    <view class="coupon-desc">{{item.desc}}</view>
+                </view>
+            </view>
+            <view class="coupon-down">
+                <view class="title">使用说明</view>
+                <repeat for="{{item.memo}}" key="i" index="j" item="memo">
+                    <view class="coupon-desc">{{j + 1}}.{{memo}}</view>
+                </repeat>
+            </view>
+        </view>
+    </repeat>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class Coupon extends wepy.component {
+  props = {
+    list: {
+      default: []
+    },
+    status: {
+      type: String,
+      default: ''
+    }
+  }
+  components = {}
+
+  data = {}
+  methods = {
+    handleShow(e) {
+      this.$emit('Event.handleShowCouponDetailClick', e)
+    }
+  }
+
+  events = {}
+  onLoad() {}
+
+   // custom methods
+}
+</script>

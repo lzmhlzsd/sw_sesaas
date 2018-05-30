@@ -1,0 +1,125 @@
+<style lang="less">
+::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    color: transparent;
+}
+.swiper-tab-pd {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 999;
+}
+</style>
+
+<template>
+  <view class="swiper-tab-pd">
+    <tab @currentTab.user="getCurrentTab" :tabList.sync="tabList" :currentTab.sync="currentTab" :filterList.sync="filterList" :currentFilter.sync="currentFilter"></tab>
+  </view>
+  <scroll-view scroll-y="true" style="height:{{winHeight - 43}}px; margin-top: 43px;" bindscrolltolower="onReachBottom">
+    <orderItem :orderList.sync="orderList" :currentTab.sync="currentTab" :noMore.sync="no_more"></orderItem>
+    <placeHolder :show.sync="is_empty" icon="icon-empty" message="暂无发现数据"></placeHolder>
+  </scroll-view>
+</template>
+
+<script>
+import wepy from 'wepy'
+// import { connect } from 'wepy-redux'
+import Tab from './../components/tab'
+import OrderItem from './../components/orderItem'
+import PlaceHolder from './../components/placeholder'
+import api from './../api/api'
+import tip from '../utils/tip'
+
+// @connect({
+//   winHeight (state) {
+//     return state.systemInfo
+//   }
+// })
+export default class Order extends wepy.page {
+  config = {
+    navigationBarTitleText: '订单'
+  };
+  components = {
+    tab: Tab,
+    placeHolder: PlaceHolder,
+    orderItem: OrderItem
+  };
+
+  data = {
+    tabList: [
+            { name: '全部', type: 1, dotNum: 200 },
+            { name: '待付款', type: 2, dotNum: 20 },
+            { name: '待发货', type: 3, dotNum: 8 },
+            { name: '已收货', type: 4, dotNum: 9 }
+    ],
+    filterList: [
+            { name: '全部订单', type: 0 },
+            { name: '线上订单', type: 1 },
+            { name: '线下订单', type: 2 }
+    ],
+    winHeight: 0,
+    currentTab: 1,
+    currentFilter: 0,
+    orderList: [],
+    is_empty: true,
+    no_more: false
+  };
+  methods = {
+    getCurrentTab(cur, evt) {}
+  };
+
+  events = {
+    'Event.HandleClick': () => {
+      console.log(
+                'currentTab: %s, currentFilter: %s',
+                this.currentTab,
+                this.currentFilter
+            )
+      this.getOrderList()
+    }
+  };
+  onLoad(options) {
+    let SystemInfo = wepy.getStorageSync('SystemInfo')
+    this.winHeight = SystemInfo.windowHeight + 48 // 非首页加菜单栏高度
+    console.log(`order type is: ${options.type}`)
+    this.currentTab = parseInt(options.type)
+    this.$apply()
+  }
+
+  onShow() {
+    this.getOrderList()
+  }
+    // custom methods
+
+    // 查询订单
+  async getOrderList() {
+    const res = await api.getOrderList({ method: 'POST' })
+        // console.log(res)
+    if (res) {
+      if (res.code === 1000) {
+        this.orderList = res.result.list
+        if (res.result.pageTotal === 0) {
+          this.is_empty = true
+        } else {
+          this.is_empty = false
+        }
+        if (res.result.pageNum === res.result.pageTotal) {
+          this.no_more = true
+        } else {
+          this.no_more = false
+        }
+        this.$apply()
+                // console.log(res.result)
+      } else {
+        tip.error(res.emsg)
+      }
+    }
+  }
+    // 加载更多
+  onReachBottom() {
+    console.log(`loader more...`)
+  }
+}
+</script>

@@ -1,0 +1,97 @@
+<style lang="less">
+    @import "./../style/theme";
+    .order {
+        padding:20rpx;
+        margin-top:15rpx;
+        background:#fff;
+        .order-item-header {
+            padding: 0 10rpx 20rpx;
+            border-bottom:1px solid #efefef;
+            text-align: left;
+            .order-no {
+                font-size: 28rpx;
+            }
+            .order-time {
+                font-size: 28rpx;
+                margin-top: 6rpx;
+            }
+            .order-doc {
+                font-size:28rpx;
+                color:#808080;
+            }
+        }
+        .order-item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20rpx 10rpx 0;
+            font-size:28rpx;
+            .num {
+                color: #ff4856;
+                .gray {
+                    color: #666;
+                }
+            }
+        }
+    }
+    // .order:last-child {
+    //     margin-bottom:15rpx;
+    // }
+    .no-more-order {
+        padding: 30rpx;
+        text-align: center;
+        color: @color-l6
+    }
+</style>
+
+<template>
+    <repeat for="{{orderList}}" key="m" index="n" item="item">
+        <view class="order">
+            <view class="order-item-header">
+                <!-- <view class="store-name"></view> -->
+                <view class="order-no">订单编号: <text class="order-doc">{{item.orderNo}}</text></view>
+                <view class="order-time">下单时间: <text class="order-doc">{{item.createTime}}</text></view>
+            </view>
+            <view class="order-item-content">
+                <navigator url="/pages/orderDetail?orderNo={{item.orderNo}}">
+                    <shopItemList :list.sync="item.orderItemList"></shopItemList>
+                </navigator>
+            </view>
+            <view class="order-item-footer">
+                <view>
+                    <text>实付款：</text>
+                    <text class="num">{{item.totalPrice}}</text>
+                    <text class="gray freight-txt">（含运费{{item.freight}}元）</text>
+                </view>
+            </view>
+        </view>
+    </repeat>
+    <view class="no-more-order" wx:if="{{noMore}}">已经没有更多订单了～</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import ShopItemList from './shopItemList'
+
+export default class OrderItem extends wepy.component {
+  props = {
+    orderList: {
+      default: []
+    },
+    noMore: {
+      default: false
+    }
+  }
+  components = {
+    shopItemList: ShopItemList
+  }
+
+  data = {}
+  methods = {}
+
+  events = {}
+  onLoad() {}
+
+   // custom methods
+}
+</script>

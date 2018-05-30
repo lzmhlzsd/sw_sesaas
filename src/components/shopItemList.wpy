@@ -1,0 +1,101 @@
+<style lang="less">
+.goods-list {
+    display: flex;
+    justify-content: space-between;
+    padding: 20rpx 10rpx;
+    border-bottom: 1px solid #efefef;
+
+    .image-box image {
+        display: block;
+        width: 180rpx;
+        height: 180rpx;
+    }
+    .goods-info {
+        padding: 0 12rpx 0 20rpx;
+        width: 80%;
+        .product-name {
+            color: #414141;
+            font-size: 26rpx;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            word-break: break-all;
+        }
+        .product-rule {
+            font-size: 26rpx;
+            color: #757575;
+            padding-top: 10rpx;
+        }
+        .product-info {
+            padding-top: 20rpx;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            .price {
+                color: #de0000;
+                font-size: 30rpx;
+            }
+            .product-num {
+                font-size: 30rpx;
+            }
+        }
+    }
+}
+</style>
+
+<template>
+    <repeat for="{{list}}" key="index" index="index" item="item">
+        <view class="goods-list">
+            <view class="image-box">
+                <image src="{{item.goodsImage}}"></image>
+            </view>
+            <view class="goods-info">
+                <view class="product-name">{{item.goodsName}}</view>
+                <view class="product-rule">
+                    规格:
+                    <text>{{item.goodsSkuVals}}</text>
+                </view>
+                <view class="product-info">
+                    <view class="price">￥{{item.price}}</view>
+                    <view class="product-num">x{{item.num}}</view>
+                </view>
+                <view class="order-footer">
+
+                </view>
+            </view>
+        </view>
+    </repeat>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class ShopeItemList extends wepy.component {
+  props = {
+    list: {
+      default: []
+    }
+  };
+  components = {};
+
+  data = {};
+  methods = {
+    refreshList(val) {
+      if (val === undefined) return
+      this.list = val
+      this.$apply()
+    }
+  };
+
+  events = {};
+  watch = {
+    list(curVal, oldVal) {
+      console.log(`旧值：${oldVal}，新值：${curVal}`)
+    }
+  };
+  onLoad() {}
+
+    // custom methods
+}
+</script>

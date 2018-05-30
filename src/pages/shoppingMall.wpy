@@ -1,0 +1,28 @@
+<style lang="less">
+
+</style>
+
+<template>
+  <view>
+
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class ShoppingMall extends wepy.page {
+  config = {
+    navigationBarTitleText: '购物商城'
+  }
+  components = {}
+
+  data = {}
+  methods = {}
+
+  events = {}
+  onLoad() {}
+
+   // custom methods
+}
+</script>

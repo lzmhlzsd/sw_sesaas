@@ -1,0 +1,152 @@
+<style lang="less">
+@import "./style/icon";
+@import "./style/base";
+
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+
+import { setStore } from 'wepy-redux'
+import configStore from './store'
+
+const store = configStore()
+setStore(store)
+
+export default class extends wepy.app {
+  config = {
+    pages: [
+
+      // 'pages/coupon',
+
+      'pages/my',                           // 会员主页
+      'pages/order',                        // 订单
+      'pages/orderDetail',                  // 订单详情
+      'pages/index',
+      'pages/home',                         //
+      'pages/shopCart',                     // 购物车
+      'pages/goodsDetail',                  //
+      'pages/submitOrder',                  // 提交订单
+      'pages/addressList',                  // 收货地址
+      'pages/addAddress',                   // 新增收货地址
+      'pages/editAddress',                  // 修改收货地址
+      'pages/integralMall',                 // 积分商城
+      'pages/shoppingMall',                 // 购物商城
+      'pages/coupon'                        // 优惠券
+    ],
+    window: {
+      // backgroundTextStyle: 'light',
+      // navigationBarBackgroundColor: '#fff',
+      // navigationBarTitleText: 'WeChat',
+      // navigationBarTextStyle: 'black'
+      backgroundTextStyle: 'dark',
+      navigationBarBackgroundColor: '#FFFFFF',
+      navigationBarTitleText: 'WeChat',
+      navigationBarTextStyle: 'black',
+      enablePullDownRefresh: false,
+      backgroundColor: '#EFEFEF'
+    },
+    tabBar: {
+      color: '#999999',
+      selectedColor: '#ff6a3c',
+      backgroundColor: '#ffffff',
+      borderStyle: 'black',
+      list: [{
+        pagePath: 'pages/home',
+        text: '首页',
+        iconPath: 'images/icon_home.png',
+        selectedIconPath: 'images/icon_home_active.png'
+      },
+      {
+        pagePath: 'pages/index',
+        text: '分类',
+        iconPath: 'images/icon_home.png',
+        selectedIconPath: 'images/icon_home_active.png'
+      },
+      // {
+      //   "pagePath": "pages/shop_cart",
+      //   "text": "购物车",
+      //   "iconPath": "images/icon_shop_cart.png",
+      //   "selectedIconPath": "images/icon_shop_cart_active.png"
+      // },
+      {
+        pagePath: 'pages/my',
+        text: '我的',
+        iconPath: 'images/icon_info.png',
+        selectedIconPath: 'images/icon_info_active.png'
+      }]
+    }
+  }
+
+  globalData = {
+    userInfo: null
+  }
+
+  constructor () {
+    super()
+    this.use('requestfix')
+    this.use('promisify')
+  }
+
+  onLaunch() {
+    this.testAsync()
+    console.log(new Date())
+    wepy.setStorageSync('SystemInfo', wx.getSystemInfoSync())
+    // console.log(wx.getSystemInfoSync())
+    // wx.login({
+    //   success: function(res) {
+    //     console.log(res)
+    //     if (res.code) {
+    //       // //发起网络请求
+    //       // wx.request({
+    //       //   url: 'https://test.com/onLogin',
+    //       //   data: {
+    //       //     code: res.code
+    //       //   }
+    //       // })
+    //     } else {
+    //       console.log('登录失败！' + res.errMsg)
+    //     }
+    //   }
+    // })
+      // wx.getUserInfo({
+      //   success: function(res) {
+      //     console.log(res.userInfo)
+      //   },
+      //   fail: function(error) {
+      //     console.log(error)
+      //   },
+      //   complete: function(res) {
+      //     console.log(res)
+      //   }
+      // })
+  }
+
+  sleep (s) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve('promise resolved')
+      }, s * 1000)
+    })
+  }
+
+  async testAsync () {
+    const data = await this.sleep(3)
+    console.log(data)
+  }
+
+  getUserInfo(cb) {
+    const that = this
+    if (this.globalData.userInfo) {
+      return this.globalData.userInfo
+    }
+    wepy.getUserInfo({
+      success (res) {
+        that.globalData.userInfo = res.userInfo
+        cb && cb(res.userInfo)
+      }
+    })
+  }
+}
+</script>

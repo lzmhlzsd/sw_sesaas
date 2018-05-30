@@ -1,0 +1,55 @@
+<style lang="less">
+    @import "./../style/theme";
+    .placeholder {
+        margin-top:150rpx;
+        width:100%;
+        text-align:center;
+        .iconfont {
+            font-size:140rpx;
+            color: @color-l6;
+        }
+        .txt {
+            font-size:26rpx;
+            color: @color-l6;
+            margin-top:36rpx;
+        }
+    }
+</style>
+
+<template>
+  <view class="placeholder" wx:if="{{show}}">
+      <view>
+          <i class="iconfont {{icon}}"></i>
+      </view>
+      <view class="txt">{{message}}</view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class PlaceHolder extends wepy.component {
+  props = {
+    show: {
+      type: Boolean,
+      default: false
+    },
+    icon: {
+      type: String,
+      default: ''
+    },
+    message: {
+      default: '没有相关数据'
+    }
+  }
+  components = {}
+
+  data = {}
+  methods = {}
+
+  events = {}
+  onLoad() {}
+
+   // custom methods
+}
+</script>

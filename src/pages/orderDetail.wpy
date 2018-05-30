@@ -1,0 +1,134 @@
+<style lang="less">
+    .order-detail {
+        .title {
+            display:inline-block;
+            width:160rpx;
+            font-size:28rpx;
+            color:#858585;
+            text-align:right;
+        }
+        .content {
+            padding-left:24rpx;
+            font-size:28rpx;
+            color:#333;
+        }
+    }
+</style>
+
+<template>
+    <view class="order-detail">
+        <!-- 订单详情: {{orderNo}} -->
+        <view class="content-block">
+            <view class="name">
+                <text class="title">收货人:</text>
+                <text class="content">{{orderDetail.receiverName}}\t\t{{orderDetail.receiverPhone}}</text>
+            </view>
+            <view class="address">
+                <text class="title">收货地址:</text>
+                <text class="content">{{orderDetail.receiverAddress}} </text>
+            </view>
+        </view>
+        <view class="content-block">
+            <shopItemList :list.sync="list"></shopItemList>
+        </view>
+        <view class="content-block">
+            <view>
+                <text class="title">订单状态:</text>
+                <text class="content">{{orderDetail.status}}</text>
+            </view>
+            <view>
+                <text class="title">订单编号:</text>
+                <text class="content">{{orderDetail.orderNo}} </text>
+            </view>
+            <view>
+                <text class="title">下单时间:</text>
+                <text class="content">{{orderDetail.createTime}} </text>
+            </view>
+            <view>
+                <text class="title">支付方式:</text>
+                <text class="content">{{orderDetail.payType}} </text>
+            </view>
+            <view>
+                <text class="title">付款时间:</text>
+                <text class="content">{{orderDetail.payTime}} </text>
+            </view>
+        </view>
+        <view class="content-block">
+            <view>
+                <text class="title">商品总价:</text>
+                <text class="content">{{orderDetail.price}}</text>
+            </view>
+            <view>
+                <text class="title">运费:</text>
+                <text class="content">{{orderDetail.freight}} </text>
+            </view>
+            <view>
+                <text class="title">应付金额:</text>
+                <text class="content">{{orderDetail.totalPrice}} </text>
+            </view>
+        </view>
+        <view class="content-block">
+            <view class="name">
+                <text class="title">买家备注:</text>
+                <text class="content">{{orderDetail.memo}}</text>
+            </view>
+            <view class="address">
+                <text class="title">买家留言:</text>
+                <text class="content">{{orderDetail.buyerMsg}} </text>
+            </view>
+            <view class="address">
+                <text class="title">卖家留言:</text>
+                <text class="content">{{orderDetail.sellerMsg}} </text>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import ShopItemList from './../components/shopItemList'
+import api from './../api/api'
+import tip from '../utils/tip'
+
+export default class OrderDetail extends wepy.page {
+  config = {
+    navigationBarTitleText: '订单详情'
+  }
+  components = {
+    shopItemList: ShopItemList
+  }
+
+  data = {
+    orderNo: '',
+    list: [],
+    orderDetail: {}
+  }
+  methods = {}
+
+  events = {}
+  onLoad(options) {
+    this.orderNo = options.orderNo
+    this.$apply()
+    this.getOrderList()
+  }
+
+    // 查询订单详情
+  async getOrderList() {
+    const res = await api.getOrderDetail({
+      method: 'POST',
+      query: {
+        orderNo: this.orderNo
+      }
+    })
+    if (res.code === 1000) {
+      this.orderDetail = res.result
+      this.list = res.result.list
+      this.$apply()
+      this.$invoke('shopItemList', 'refreshList', this.list)
+    } else {
+      tip.error(res.emsg)
+    }
+  }
+    // custom methods
+}
+</script>

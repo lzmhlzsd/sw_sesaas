@@ -1,0 +1,138 @@
+<style lang="less">
+@import './../style/theme';
+  .address-list {
+    padding: 20rpx;
+    background: #fff;
+    border-top: 1px solid @color-l7;
+    .address-info {
+      display: flex;
+      justify-content: space-between;
+      padding: 20rpx 10rpx;
+      .icon {
+        display: flex;
+        align-items: center;
+      }
+      .icon-check.active {
+          background: @color-l1;
+      }
+      .icon-check.no-active {
+          background: @color-l6;
+      }
+      .address-txt {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 0 12rpx 0 20rpx;
+      }
+      .name-phone {
+        font-size: 28rpx;
+        font-weight: 600;
+      }
+      .address {
+        font-size: 28rpx;
+        color: @color-l6;
+      }
+      .edit {
+        width: 120rpx;
+        font-size: 28rpx;
+        color: @color-l1;
+        text-align: center;
+      }
+    }
+    .address-info:not(:last-child) {
+      border-bottom: 1px solid @color-l7;
+    }
+  }
+  .add-address {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100rpx;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    border-bottom: 1px solid #eee;
+    border-top: 1px solid #eee;
+    background-color: #fff;
+    z-index: 9999;
+    text {
+      font-size: 28rpx;
+      color: @color-l1;
+    }
+  }
+  .icon-success {
+    font-size: 42rpx;
+    color: #bbbbbb
+  }
+  .icon-success.checked {
+    color: @color-l1
+  }
+</style>
+
+<template>
+  <view class="address-list">
+    <repeat for={{list}} key="index" index="index" item="item">
+      <view class="address-info">
+        <view class="icon">
+          <icon class="icon-check" type="success" color="{{item.default ? '#F34A51': '#bbbbbb'}}" @tap.stop="selectTap({{index}})" data-index="{{index}}" size="20" />
+        </view>
+        <view class="address-txt">
+          <view style="width: 100%;">
+            <view class="name-phone">{{item.name}}\t\t{{item.phone}}</view>
+            <view class="address">{{item.address}}</view>
+          </view>
+          <view class="edit">
+            <navigator url="/pages/editAddress?id={{item.id}}">
+              <text>编辑</text>
+            </navigator>
+          </view>  
+        </view>
+      </view>
+    </repeat>
+  </view>
+  <navigator url="/pages/addAddress">
+    <view class="add-address">
+      <text>新增收获地址</text>    
+    </view>
+  </navigator>
+</template>
+
+<script>
+import wepy from 'wepy'
+import api from './../api/api'
+import tip from '../utils/tip'
+
+export default class AddressList extends wepy.page {
+  config = {
+    navigationBarTitleText: '收货地址'
+  }
+  components = {}
+
+  data = {
+    list: []
+  }
+  methods = {}
+
+  events = {}
+  onLoad() {
+
+  }
+  onShow() {
+    this.getAddressList()
+  }
+   // custom methods
+  async getAddressList() {
+    const res = await api.getAddressList({ method: 'POST' })
+    if (res) {
+      if (res.code === 1000) {
+        this.list = res.result
+        this.$apply()
+      } else {
+        tip.error(res.emsg)
+      }
+    }
+  }
+}
+</script>

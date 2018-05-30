@@ -1,0 +1,307 @@
+<style lang="less">
+@import './../style/theme';
+.goods-list {
+    padding: 20rpx;
+    background: #fff;
+    border-top: 1px solid @color-l7;
+    .goods-info {
+        display: flex;
+        justify-content: space-between;
+        padding: 20rpx 10rpx;
+        .icon-check {
+            margin-top: 70rpx;
+        }
+        .icon-check.active {
+            background: @color-l1;
+        }
+        .icon-check.no-active {
+            background: @color-l6;
+        }
+        .img-box {
+            margin-left: 20rpx;
+            image {
+                display: block;
+                width: 180rpx;
+                height: 180rpx;
+            }
+        }
+        .text-box {
+            position: relative;
+            width: 100%;
+            padding: 0 12rpx 0 20rpx;
+            .goods-title {
+              overflow:hidden; 
+              text-overflow:ellipsis;
+              display:-webkit-box; 
+              -webkit-box-orient:vertical;
+              -webkit-line-clamp:2; 
+              font-size: 26rpx;
+            }
+            .product-rule {
+                font-size: 26rpx;
+                color: #757575;
+                padding-top: 10rpx;
+            }
+            .product-info {
+                position: absolute;
+                right: 12rpx;
+                bottom: 0;
+                left: 20rpx;
+                display: flex;
+                justify-content: space-between;
+                padding-top: 10rpx;
+                .price {
+                    color: #de0000;
+                    font-size: 30rpx;
+                }
+            }
+        }
+    }
+    .goods-info:not(:last-child) {
+      border-bottom: 1px solid @color-l7;
+    }
+}
+.jiesuan-box {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 100rpx;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    border-bottom: 1px solid #eee;
+    border-top: 1px solid #eee;
+    background-color: #fff;
+    z-index: 9999;
+    .all_select_box {
+      display: flex;
+      align-items: center;
+      padding-left: 12rpx;
+      icon {
+        margin-right: 10rpx;
+      }
+    }
+    .to-pay-btn {
+        width: 240rpx;
+        text-align: center;
+        line-height: 100rpx;
+        background-color: @color-l1;
+        font-size: 32rpx;
+        color: #ffffff;
+    }
+    .to-pay-btn.no-select {
+        background-color: #ccc;
+    }
+    .left-price {
+        display: flex;
+        width: 510rpx;
+        justify-content: space-between;
+        padding: 0 30rpx 0 20rpx;
+        font-size: 28rpx;
+        box-sizing: border-box;
+        align-items: center;
+    }
+    .total {
+        color: @color-l1;
+    }
+}
+.buy-num {
+  display: flex;
+  align-items: center;
+  .jian-btn {
+    width: 48rpx;
+    height: 48rpx;
+    border-left: 1rpx solid #ccc;
+    border-bottom: 1rpx solid #ccc;
+    border-top: 1rpx solid #ccc;
+    border-bottom-left-radius: 6rpx;
+    border-top-left-radius: 6rpx;
+    text-align: center;
+    line-height: 40rpx;
+  }
+  .jian-btn.disabled {
+    background-color: #f5f5f9;
+    color: #ccc;
+  }
+  .jia-btn {
+    width: 48rpx;
+    height: 48rpx;
+    border-right: 1rpx solid #ccc;
+    border-bottom: 1rpx solid #ccc;
+    border-top: 1rpx solid #ccc;
+    border-bottom-right-radius: 6rpx;
+    border-top-right-radius: 6rpx;
+    text-align: center;
+    line-height: 40rpx;
+  }
+  .jia-btn.disabled {
+    background-color: #f5f5f9;
+    color: #ccc;
+  }
+  input {
+    width: 68rpx;
+    height: 48rpx;
+    min-height: 48rpx;
+    text-align: center;
+    font-size: 24rpx;
+    border: 1rpx solid #ccc;
+  }
+}
+</style>
+
+<template>
+  <view class="goods-list">
+    <repeat for={{list}} key="index" index="index" item="item">
+      <view class="goods-info">
+        <icon class="icon-check" type="success" color="{{item.checked ? '#F34A51': '#bbbbbb'}}" @tap.stop="selectTap({{index}})" data-index="{{index}}" size="20" />
+        <view @tap.stop="goGoodsDetail({{index}})" class="view-flex" style="width: 100%">
+          <view class="img-box">
+            <image src="{{item.goodsImage}}" class="img" />
+          </view>
+          <view class="text-box">
+            <view class="goods-title">
+              <!-- <navigator url="/pages/goods_detail"> -->
+                {{item.goodsName}}
+              <!-- </navigator> -->
+            </view>
+            <view class="product-rule">
+              规格:
+              <text>{{item.goodsSkuVals}}</text>
+            </view>
+            <view class="product-info">
+              <view class="price">￥{{item.price}}</view>
+              <view class="buy-num">
+                  <view class="jian-btn btn {{item.num == 1 ? 'disabled' : ''}}" @tap.stop="reduce({{index}})">-</view>
+                  <input type="number" bindinput="bindGoodsNumInput({{index}})" value="{{item.num}}" maxlength="3"/>
+                  <view class="jia-btn btn {{item.num >= 999 ? 'disabled' : ''}}" @tap.stop="plus({{index}})">+</view>
+                </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </repeat>
+  </view>
+  <view class="jiesuan-box">
+    <view class="left-price">
+      <view @tap.stop="selectAll" class="all_select_box">
+        <icon type="success" size="20" color="{{allChecked?'red':'rgb(153,153,153)'}}" />
+        <text class="all_select">全选</text>
+      </view>
+      <view class="total" hidden="{{noSelect}}">合计：¥ {{totalPrice}}</view>
+    </view>
+    <view class="to-pay-btn {{totalNum == 0 ? 'no-select' : ''}}" @tap.stop="goBalance">去结算({{totalNum}})</view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import _ from 'lodash'
+import api from './../api/api'
+import tip from '../utils/tip'
+
+export default class ShopCart extends wepy.page {
+  config = {
+    navigationBarTitleText: '购物车'
+  };
+  components = {};
+
+  data = {
+    list: [],
+    totalPrice: '0.00',
+    testvalue: 'testvalue',
+    allChecked: false,
+    totalNum: 0
+  };
+  methods = {
+    selectTap(index, e) {
+      this.list[index].checked = !this.list[index].checked
+      this.getTotal()
+    },
+    plus(index, e) {
+      console.log(`plus index: ${index}`)
+      this.list[index].num++
+      if (!this.list[index].checked) {
+        this.list[index].checked = true
+      }
+      this.getTotal()
+    },
+    reduce(index, e) {
+      if (this.list[index].num > 1) {
+        this.list[index].num--
+        if (!this.list[index].checked) {
+          this.list[index].checked = true
+        }
+        this.getTotal()
+      }
+    },
+    bindGoodsNumInput(index, e) {
+      this.list[index].num = e.detail.value
+      this.getTotal()
+    },
+    goGoodsDetail(index, e) {
+      wx.navigateTo({
+        url: '/pages/goodsDetail'
+      })
+    },
+    // blur(index, e) {
+    //   let oldnum = this.list[index].num
+    //   this.list[index].num = parseInt(e.detail.value)
+    //   if (this.list[index].num === 0) {
+    //     this.list[index].num = oldnum
+    //   }
+    //   console.log('blur')
+    // },
+    selectAll(e) {
+      let self = this
+      self.allChecked = !self.allChecked
+      _.forEach(self.data.list, function(value, key) {
+        value.checked = self.allChecked
+      })
+      self.getTotal()
+    },
+    goBalance() {
+      if (this.totalNum > 0) {
+        wx.navigateTo({
+          url: '/pages/submitOrder'
+        })
+      }
+    }
+  };
+
+  events = {};
+  onLoad() {}
+
+  onShow() {
+    this.getShopCartList()
+  }
+    // custom methods
+    // 获取购物车商品列表
+  async getShopCartList() {
+    const res = await api.getShopCartList({ method: 'POST' })
+    if (res) {
+      if (res.code === 1000) {
+        console.log(res.result)
+        this.list = res.result
+        this.$apply()
+        this.getTotal()
+      } else {
+        tip.error(res.emsg)
+      }
+    }
+  }
+  // 计算总金额
+  getTotal() {
+    let total = 0
+    let num = 0
+    _.forEach(this.data.list, function(value, key) {
+      if (value.checked) {
+        total += value.num * parseFloat(value.price)
+        num += value.num
+      }
+    })
+    this.totalPrice = total.toFixed(2)
+    this.totalNum = num
+    this.$apply()
+  }
+}
+</script>

@@ -1,0 +1,163 @@
+<style lang="less">
+    @import "./../style/theme";
+    .swiper-tab {
+        display: flex;
+        border-bottom: 1rpx solid #eee;
+        background: #fff;
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            width: 100%;
+            line-height: 80rpx;
+            text-align: center;
+        }
+        .swiper-tab-list {
+            position: relative;
+            flex: 1;
+            font-size: 30rpx;
+            color: @color-l5;
+        }
+        .active {
+            color: @color-l1;
+            border-bottom: 5rpx solid @color-l1;
+        }
+        .filters {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 80rpx;
+            .iconfont {
+                position: relative;
+                top: -4rpx;
+                font-size: 36rpx;
+                color: @color-l5;
+            }
+        }
+    }
+    .filters-c {
+        position: absolute;
+        right: 0;
+        z-index: 9999;
+        padding: 10rpx 20rpx;
+        background: #fff;
+        border-right: 1rpx solid #eee;
+        border-bottom: 1rpx solid #eee;
+        border-left: 1rpx solid #eee;
+        .filter {
+            padding: 8rpx;
+            font-size: 28rpx;
+            color: @color-l5;
+        }
+        .filter.active {
+            color: @color-l1;
+        }
+    }
+    .dot {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        top: 0;
+        // right: 10rpx;
+        // left: 5rpx;
+        z-index: 999;
+        min-width: 32rpx;
+        height: 32rpx;
+        padding: 2rpx;
+        border-radius: 100rpx;
+        font-size: 24rpx;
+        line-height: 36rpx;
+        color: #fff;
+        text-align: center;
+        background: #e52424; 
+    }
+</style>
+
+<template>
+  <view class="swiper-tab">
+      <view class="tabs">
+        <view wx:for="{{tabList}}" wx:key="index" class="swiper-tab-list {{currentTab === item.type ? 'active' : ''}}" @tap="handleTab({{item.type}})">
+            <text>{{item.name}}</text>
+            <view class="{{item.dotNum>=0 ? 'dot' : ''}}" wx:if="{{item.dotNum > 0}}" style="right: {{right}}rpx;">{{item.dotNum}}</view>
+        </view>
+      </view>
+      <view class="filters" wx:if="{{filterList != null}}" @tap="taggle">
+        <view class="filter-btn" @tap="filter">
+            <i class="iconfont icon-filter"></i>
+        </view>
+      </view>
+  </view>
+  <view class="filters-c" wx:if="{{filters_is_show}}">
+    <view wx:for="{{filterList}}" wx:key="index" class="filter {{currentFilter === item.type ? 'active' : ''}}" @tap="handleFilter({{item.type}})">
+        <view>{{item.name}}</view>
+    </view>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class Tab extends wepy.component {
+  props = {
+    currentTab: {
+      default: 0,
+      twoWay: true
+    },
+    tabList: {
+      type: Object
+    },
+    currentFilter: {
+      default: 0,
+      twoWay: true
+    },
+    filterList: {
+      type: Object,
+      default: null
+    }
+  }
+
+  data = {
+    filters_is_show: false,
+    right: 0
+  }
+  methods = {
+    handleTab(type) {
+      this.filters_is_show = false
+      if (this.data.currentTab === type) {
+        return false
+      } else {
+        this.currentTab = type
+        this.$apply()
+      }
+      console.log('Event.CurrentTab')
+      this.$emit('Event.HandleClick')
+    },
+    taggle() {
+      this.filters_is_show = !this.filters_is_show
+    },
+    filter() {
+
+    },
+    handleFilter(type) {
+      this.filters_is_show = false
+      if (this.data.currentFilter === type) {
+        return false
+      } else {
+        this.currentFilter = type
+        this.$apply()
+      }
+      console.log('Event.CurrentFilter')
+      this.$emit('Event.HandleClick')
+    }
+  }
+
+  events = {}
+  onLoad() {
+    let SystemInfo = wepy.getStorageSync('SystemInfo')
+    this.right = ((SystemInfo.windowWidth / this.tabList.length) / 2 - 40) * 2
+    console.log(this.right)
+  }
+
+   // custom methods
+}
+</script>

@@ -1,0 +1,63 @@
+<style lang="less">
+    .grid-view {
+        display: flex;
+        view {
+            flex: 1;
+        }
+        .gird-item {
+            border-right: 1px solid #fff;
+        }
+        .grid-border {
+            border-bottom: 1px solid #f2f2f2;
+            border-right: 1px solid #f2f2f2;
+        }
+        .gird-item:last-child {
+            border-right-width: 0;
+        }
+    }
+</style>
+
+<template>
+    <repeat for="{{list}}" item="row">
+        <view class="grid-view">
+            <repeat for="{{cols}}" key="m" index="n" item="item">
+                <gridItem wx:if="{{row[n]}}" :gitem.sync="row" :index.sync="n" class="{{row[n] ? 'grid-border' : ''}}"></gridItem>
+                <view wx:else class="grid-item"></view>
+            </repeat>
+        </view>
+    </repeat>
+</template>
+
+<script>
+import wepy from 'wepy'
+import _ from 'lodash'
+import gridItem from './gridItem'
+
+export default class Grid extends wepy.component {
+  props = {
+    gridlist: {},
+    cols: {}
+  }
+
+  data = {
+    list: {}
+  }
+
+  components = {
+    gridItem: gridItem
+  }
+
+  computed = {
+    list() {
+      console.log('grid computed list')
+      return _.chunk(this.gridlist, this.cols)
+    }
+  }
+
+  onLoad() {
+    // this.list = _.chunk(this.gridlist, 4)
+    console.log('grid onload')
+  }
+   // custom methods
+}
+</script>

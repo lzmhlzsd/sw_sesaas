@@ -1,0 +1,51 @@
+<style lang="less">
+.group-item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex:1;
+    input {
+        flex:1;
+    }
+}
+.icon-fail {
+    font-size: 40rpx;
+    color: #bbbbbb;
+}
+</style>
+
+<template>
+  <view class="group-item">
+      <slot name="input"></slot>
+      <view>
+          <i class="iconfont icon-fail" @tap.stop="handleClear({{prop}})"></i>
+      </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class InputClear extends wepy.component {
+  props = {
+    prop: {
+      type: String,
+      default: ''
+    }
+  }
+  components = {}
+
+  data = {}
+  methods = {
+    handleClear(e) {
+      console.log('Event.ClearInput')
+      this.$emit('Event.ClearInput', e)
+    }
+  }
+
+  events = {}
+  onLoad() {}
+
+   // custom methods
+}
+</script>

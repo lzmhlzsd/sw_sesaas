@@ -1,0 +1,59 @@
+<style lang="less">
+    @import "./../style/theme";
+    .swiper-tab-filter {
+        position: relative;
+        .filter-btn {
+            width: 80rpx;
+        }
+    }
+    .filters-c {
+        position: absolute;
+        right: 0;
+    }
+</style>
+
+<template>
+    <view class="swiper-tab-filter view-flex">
+        <tab :tabList.sync="tabList"></tab>
+        <view class="filters">
+            <view class="filter-btn">
+                <i class="iconfont icon-gouwuche"></i>
+            </view>
+        </view>
+    </view>
+    <view class="filters-c">
+        <view wx:for="{{filterList}}" wx:key="index" class="filter">
+            <view>{{item.name}}</view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Tab from './tab'
+
+export default class TabFilter extends wepy.component {
+  props = {
+    currentTab: {
+      default: 0
+    },
+    tabList: {
+      type: Object
+    },
+    filterList: {
+      type: Object
+    }
+  }
+  components = {
+    tab: Tab
+  }
+  methods = {
+
+  }
+
+  events = {}
+  onLoad() {}
+
+   // custom methods
+}
+</script>
